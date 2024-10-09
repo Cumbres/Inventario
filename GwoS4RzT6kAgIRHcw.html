@@ -1,0 +1,268 @@
+<html><head><base href="https://docs.google.com/spreadsheets/d/104GGPflFlJrQWhsH3ig7cPo72AubWlO0/edit?usp=drivesdk&amp;ouid=114403781423643563131&amp;rtpof=true&amp;sd=true" /><style>
+  body {
+    font-family: 'Roboto', Arial, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f5f5f5;
+  }
+  .container {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  h1, h2, h3 {
+    color: #1a73e8;
+    margin: 0;
+  }
+  h1 { font-size: 24px; margin-bottom: 10px; }
+  h2 { font-size: 20px; margin-bottom: 5px; }
+  h3 { font-size: 18px; margin-bottom: 20px; }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-bottom: 20px;
+    font-size: 14px;
+  }
+  th, td {
+    border: 1px solid #e0e0e0;
+    padding: 10px;
+    text-align: left;
+  }
+  th {
+    background-color: #f8f9fa;
+    font-weight: 500;
+    text-transform: uppercase;
+    color: #5f6368;
+  }
+  tr:nth-child(even) {
+    background-color: #f8f9fa;
+  }
+  tr:hover {
+    background-color: #e8f0fe;
+  }
+  .update-info {
+    font-style: italic;
+    color: #5f6368;
+    margin-bottom: 20px;
+    font-size: 12px;
+  }
+  .search-container {
+    margin-bottom: 20px;
+    position: relative;
+  }
+  #search-input {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+  #search-results {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+    max-height: 300px;
+    overflow-y: auto;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    z-index: 1000;
+    display: none;
+  }
+  .search-result-item {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+  }
+  .search-result-item:hover {
+    background-color: #f0f0f0;
+  }
+  .highlight {
+    background-color: yellow;
+    font-weight: bold;
+  }
+  @media print {
+    .no-print { display: none; }
+    body { background-color: #fff; }
+    .container { box-shadow: none; padding: 0; }
+  }
+  @media (max-width: 768px) {
+    table { font-size: 12px; }
+    th, td { padding: 8px; }
+  }
+</style></head><body>
+
+<div class="container">
+  <h1>INVENTARIO GENERAL DE HERRAMIENTAS</h1>
+  <h2>CONDOMINIO CUMBRES DE QUILPUÉ</h2>
+  <h3>ABRIL DE 2024</h3>
+
+  <p class="update-info">Última actualización: <span id="last-updated"></span></p>
+
+  <div class="search-container no-print">
+    <input type="text" id="search-input" placeholder="Buscar herramientas...">
+    <div id="search-results"></div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>R°</th>
+        <th>PRODUCTO</th>
+        <th>CANTIDAD</th>
+        <th>MARCA</th>
+      </tr>
+    </thead>
+    <tbody id="inventory-body">
+      <!-- Contenido dinámico aquí -->
+    </tbody>
+  </table>
+
+  <div class="no-print">
+    <p style="font-size: 12px; color: #5f6368;">Este inventario se actualiza automáticamente cuando se realizan cambios en el documento de Google Sheets vinculado.</p>
+  </div>
+</div>
+
+<script>
+let inventoryData = [];
+
+function updateInventory() {
+  fetch('https://docs.google.com/spreadsheets/d/104GGPflFlJrQWhsH3ig7cPo72AubWlO0/edit?usp=drivesdk&ouid=114403781423643563131&rtpof=true&sd=true')
+    .then(response => response.text())
+    .then(data => {
+      const parser = new DOMParser();
+      const htmlDoc = parser.parseFromString(data, 'text/html');
+      const rows = htmlDoc.querySelectorAll('.waffle tr');
+      const inventoryBody = document.getElementById('inventory-body');
+      inventoryBody.innerHTML = '';
+      inventoryData = [];
+
+      for (let i = 6; i < rows.length; i++) {
+        const cells = rows[i].querySelectorAll('td');
+        if (cells.length >= 4 && cells[0].textContent.trim() !== '') {
+          const rowData = {
+            id: cells[0].textContent.trim(),
+            product: cells[1].textContent.trim(),
+            quantity: cells[2].textContent.trim(),
+            brand: cells[3].textContent.trim()
+          };
+          inventoryData.push(rowData);
+          const row = createTableRow(rowData);
+          inventoryBody.appendChild(row);
+        }
+      }
+
+      document.getElementById('last-updated').textContent = new Date().toLocaleString();
+    })
+    .catch(error => console.error('Error al actualizar el inventario:', error));
+}
+
+function createTableRow(data) {
+  const row = document.createElement('tr');
+  Object.values(data).forEach(value => {
+    const cell = document.createElement('td');
+    cell.textContent = value;
+    row.appendChild(cell);
+  });
+  return row;
+}
+
+function searchInventory() {
+  const searchTerm = document.getElementById('search-input').value.toLowerCase();
+  const searchResults = document.getElementById('search-results');
+  searchResults.innerHTML = '';
+
+  if (searchTerm.length < 2) {
+    searchResults.style.display = 'none';
+    return;
+  }
+
+  const results = inventoryData.filter(item => 
+    item.product.toLowerCase().includes(searchTerm) ||
+    item.brand.toLowerCase().includes(searchTerm) ||
+    findSimilarWords(item.product.toLowerCase(), searchTerm)
+  );
+
+  if (results.length > 0) {
+    results.forEach(item => {
+      const resultItem = document.createElement('div');
+      resultItem.className = 'search-result-item';
+      resultItem.innerHTML = `
+        <strong>${highlightText(item.product, searchTerm)}</strong><br>
+        Cantidad: ${item.quantity}, Marca: ${highlightText(item.brand, searchTerm)}
+      `;
+      resultItem.addEventListener('click', () => {
+        document.getElementById('search-input').value = item.product;
+        searchResults.style.display = 'none';
+      });
+      searchResults.appendChild(resultItem);
+    });
+    searchResults.style.display = 'block';
+  } else {
+    searchResults.innerHTML = '<div class="search-result-item">No se encontraron resultados.</div>';
+    searchResults.style.display = 'block';
+  }
+}
+
+function highlightText(text, searchTerm) {
+  const regex = new RegExp(`(${searchTerm})`, 'gi');
+  return text.replace(regex, '<span class="highlight">$1</span>');
+}
+
+function findSimilarWords(text, searchTerm) {
+  const words = text.split(/\s+/);
+  return words.some(word => levenshteinDistance(word, searchTerm) <= 2);
+}
+
+function levenshteinDistance(a, b) {
+  if (a.length === 0) return b.length;
+  if (b.length === 0) return a.length;
+
+  const matrix = [];
+
+  for (let i = 0; i <= b.length; i++) {
+    matrix[i] = [i];
+  }
+
+  for (let j = 0; j <= a.length; j++) {
+    matrix[0][j] = j;
+  }
+
+  for (let i = 1; i <= b.length; i++) {
+    for (let j = 1; j <= a.length; j++) {
+      if (b.charAt(i - 1) === a.charAt(j - 1)) {
+        matrix[i][j] = matrix[i - 1][j - 1];
+      } else {
+        matrix[i][j] = Math.min(
+          matrix[i - 1][j - 1] + 1,
+          matrix[i][j - 1] + 1,
+          matrix[i - 1][j] + 1
+        );
+      }
+    }
+  }
+
+  return matrix[b.length][a.length];
+}
+
+updateInventory();
+setInterval(updateInventory, 300000); // Actualiza cada 5 minutos
+
+document.getElementById('search-input').addEventListener('input', searchInventory);
+document.addEventListener('click', function(event) {
+  const searchResults = document.getElementById('search-results');
+  const searchInput = document.getElementById('search-input');
+  if (event.target !== searchResults && event.target !== searchInput) {
+    searchResults.style.display = 'none';
+  }
+});
+</script>
+
+</body></html>
