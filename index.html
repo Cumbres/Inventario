@@ -1,26 +1,41 @@
-<html><head><base href="https://docs.google.com/spreadsheets/d/104GGPflFlJrQWhsH3ig7cPo72AubWlO0/edit?usp=drivesdk&amp;ouid=114403781423643563131&amp;rtpof=true&amp;sd=true" /><style>
+<html><head><base href="https://docs.google.com/spreadsheets/d/104GGPflFlJrQWhsH3ig7cPo72AubWlO0/edit?usp=drivesdk&amp;ouid=114403781423643563131&amp;rtpof=true&amp;sd=true" /><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" /><style>
   body {
     font-family: 'Roboto', Arial, sans-serif;
     line-height: 1.6;
     color: #333;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
+    margin: 0;
+    padding: 0;
     background-color: #f5f5f5;
   }
   .container {
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 40px 20px 20px; /* Increased top padding */
     background-color: #fff;
-    padding: 30px;
-    border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  .header-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+  .logo {
+    width: 100px;
+    height: auto;
+    margin-right: 20px;
+  }
+  .title-container {
+    text-align: center;
   }
   h1, h2, h3 {
     color: #1a73e8;
     margin: 0;
+    text-align: center; /* Center align all headings */
   }
-  h1 { font-size: 24px; margin-bottom: 10px; }
-  h2 { font-size: 20px; margin-bottom: 5px; }
-  h3 { font-size: 18px; margin-bottom: 20px; }
+  h1 { font-size: 2em; margin-bottom: 15px; } /* Increased size */
+  h2 { font-size: 1.6em; margin-bottom: 10px; } /* Increased size */
+  h3 { font-size: 1.3em; margin-bottom: 25px; } /* Increased size */
   table {
     border-collapse: collapse;
     width: 100%;
@@ -37,6 +52,13 @@
     font-weight: 500;
     text-transform: uppercase;
     color: #5f6368;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    text-align: center;
+  }
+  td:nth-child(4) {
+    text-align: center;
   }
   tr:nth-child(even) {
     background-color: #f8f9fa;
@@ -48,7 +70,7 @@
     font-style: italic;
     color: #5f6368;
     margin-bottom: 20px;
-    font-size: 12px;
+    font-size: 0.8em;
   }
   .search-container {
     margin-bottom: 20px;
@@ -60,6 +82,7 @@
     font-size: 16px;
     border: 1px solid #ddd;
     border-radius: 4px;
+    box-sizing: border-box;
   }
   #search-results {
     position: absolute;
@@ -88,50 +111,182 @@
     background-color: yellow;
     font-weight: bold;
   }
+  .font-size-controls {
+    margin-bottom: 15px;
+  }
+  .font-size-controls button {
+    background-color: #1a73e8;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    margin-right: 5px;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  .font-size-controls button:hover {
+    background-color: #185abc;
+  }
+  #generate-report {
+    background-color: #34a853;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 16px;
+    margin-bottom: 20px;
+  }
+  #generate-report:hover {
+    background-color: #2d9249;
+  }
+  #report-modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+  }
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+  }
+  .modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 600px;
+  }
+  #tool-image-container img {
+    max-width: 100%;
+    height: auto;
+  }
+  .close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  .close:hover,
+  .close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+  }
   @media print {
     .no-print { display: none; }
     body { background-color: #fff; }
     .container { box-shadow: none; padding: 0; }
   }
   @media (max-width: 768px) {
+    .container { padding: 10px; }
+    .header-container { flex-direction: column; }
+    .logo { margin-right: 0; margin-bottom: 10px; }
     table { font-size: 12px; }
     th, td { padding: 8px; }
+    h1 { font-size: 1.8em; }
+    h2 { font-size: 1.4em; }
+    h3 { font-size: 1.2em; }
+    .modal-content { width: 95%; }
+  }
+  @media (max-width: 480px) {
+    table { font-size: 10px; }
+    th, td { padding: 5px; }
+    .font-size-controls button { padding: 3px 6px; font-size: 0.8em; }
+    #generate-report { font-size: 14px; padding: 8px 12px; }
+    .logo { width: 80px; }
+    h1 { font-size: 1.6em; }
+    h2 { font-size: 1.3em; }
+    h3 { font-size: 1.1em; }
+  }
+  td a {
+    color: inherit;
+    text-decoration: none;
   }
 </style></head><body>
 
 <div class="container">
-  <h1>INVENTARIO GENERAL DE HERRAMIENTAS</h1>
-  <h2>CONDOMINIO CUMBRES DE QUILPUÉ</h2>
-  <h3>ABRIL DE 2024</h3>
+  <div class="header-container">
+    <img src="https://i.ibb.co/wQPsMdF/logo.png" alt="Logo" class="logo">
+    <div class="title-container">
+      <h1>INVENTARIO GENERAL DE HERRAMIENTAS</h1>
+      <h2>CONDOMINIO CUMBRES DE QUILPUÉ</h2>
+      <h3>2024</h3>
+    </div>
+  </div>
 
   <p class="update-info">Última actualización: <span id="last-updated"></span></p>
 
+  <div class="font-size-controls no-print">
+    <button id="increase-font">A+</button>
+    <button id="decrease-font">A-</button>
+  </div>
+
   <div class="search-container no-print">
-    <input type="text" id="search-input" placeholder="Buscar herramientas...">
+    <input type="text" id="search-input" placeholder="Buscar por nombre de herramienta o categoría...">
     <div id="search-results"></div>
   </div>
 
-  <table>
-    <thead>
-      <tr>
-        <th>R°</th>
-        <th>PRODUCTO</th>
-        <th>CANTIDAD</th>
-        <th>MARCA</th>
-      </tr>
-    </thead>
-    <tbody id="inventory-body">
-      <!-- Contenido dinámico aquí -->
-    </tbody>
-  </table>
+  <button id="generate-report" class="no-print">Generar Reporte de Herramientas de Baja</button>
+
+  <div class="table-responsive">
+    <table>
+      <thead>
+        <tr>
+          <th>N°</th>
+          <th>CATEGORÍA</th>
+          <th>PRODUCTO</th>
+          <th>CANTIDAD</th>
+          <th>MARCA</th>
+          <th>UBICACIÓN</th>
+          <th>ESTADO ACTUAL</th>
+        </tr>
+      </thead>
+      <tbody id="inventory-body">
+        <!-- Contenido dinámico aquí -->
+      </tbody>
+    </table>
+  </div>
 
   <div class="no-print">
-    <p style="font-size: 12px; color: #5f6368;">Este inventario se actualiza automáticamente cuando se realizan cambios en el documento de Google Sheets vinculado.</p>
+    <p style="font-size: 0.8em; color: #5f6368;">Este inventario se actualiza automáticamente cuando se realizan cambios en el documento de Google Sheets vinculado.</p>
+  </div>
+</div>
+
+<div id="report-modal" class="no-print">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h2>Reporte de Herramientas de Baja</h2>
+    <div id="report-content"></div>
+  </div>
+</div>
+
+<div id="tool-details-modal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h2 id="tool-name"></h2>
+    <p><strong>Descripción:</strong> <span id="tool-description"></span></p>
+    <p><strong>Fecha de Adquisición:</strong> <span id="tool-acquisition-date"></span></p>
+    <div id="tool-image-container"></div>
   </div>
 </div>
 
 <script>
 let inventoryData = [];
+let currentFontSize = 14;
 
 function updateInventory() {
   fetch('https://docs.google.com/spreadsheets/d/104GGPflFlJrQWhsH3ig7cPo72AubWlO0/edit?usp=drivesdk&ouid=114403781423643563131&rtpof=true&sd=true')
@@ -144,14 +299,20 @@ function updateInventory() {
       inventoryBody.innerHTML = '';
       inventoryData = [];
 
-      for (let i = 6; i < rows.length; i++) {
+      for (let i = 7; i < rows.length; i++) {
         const cells = rows[i].querySelectorAll('td');
-        if (cells.length >= 4 && cells[0].textContent.trim() !== '') {
+        if (cells.length >= 10 && cells[0].textContent.trim() !== '') {
           const rowData = {
             id: cells[0].textContent.trim(),
-            product: cells[1].textContent.trim(),
-            quantity: cells[2].textContent.trim(),
-            brand: cells[3].textContent.trim()
+            category: cells[1].textContent.trim(),
+            product: cells[2].textContent.trim(),
+            quantity: cells[3].textContent.trim(),
+            brand: cells[4].textContent.trim(),
+            description: cells[5].textContent.trim(),
+            location: cells[6].textContent.trim(),
+            status: cells[7].textContent.trim(),
+            acquisitionDate: cells[8].textContent.trim(),
+            imageUrl: cells[9].querySelector('img') ? cells[9].querySelector('img').src : ''
           };
           inventoryData.push(rowData);
           const row = createTableRow(rowData);
@@ -160,18 +321,50 @@ function updateInventory() {
       }
 
       document.getElementById('last-updated').textContent = new Date().toLocaleString();
+      updateReportButtonVisibility();
     })
     .catch(error => console.error('Error al actualizar el inventario:', error));
 }
 
 function createTableRow(data) {
   const row = document.createElement('tr');
-  Object.values(data).forEach(value => {
+  ['id', 'category', 'product', 'quantity', 'brand', 'location', 'status'].forEach(key => {
     const cell = document.createElement('td');
-    cell.textContent = value;
+    if (key === 'product') {
+      const link = document.createElement('a');
+      link.href = '#';
+      link.textContent = data[key];
+      link.innerHTML += ' <i class="fas fa-search" style="font-size: 0.8em;"></i>';
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        showToolDetails(data);
+      });
+      cell.appendChild(link);
+    } else {
+      cell.textContent = data[key];
+    }
     row.appendChild(cell);
   });
   return row;
+}
+
+function showToolDetails(toolData) {
+  document.getElementById('tool-name').textContent = toolData.product;
+  document.getElementById('tool-description').textContent = toolData.description;
+  document.getElementById('tool-acquisition-date').textContent = toolData.acquisitionDate;
+  
+  const imageContainer = document.getElementById('tool-image-container');
+  imageContainer.innerHTML = '';
+  if (toolData.imageUrl) {
+    const img = document.createElement('img');
+    img.src = toolData.imageUrl;
+    img.alt = toolData.product;
+    imageContainer.appendChild(img);
+  } else {
+    imageContainer.textContent = 'No hay imagen disponible';
+  }
+
+  document.getElementById('tool-details-modal').style.display = 'block';
 }
 
 function searchInventory() {
@@ -187,7 +380,9 @@ function searchInventory() {
   const results = inventoryData.filter(item => 
     item.product.toLowerCase().includes(searchTerm) ||
     item.brand.toLowerCase().includes(searchTerm) ||
-    findSimilarWords(item.product.toLowerCase(), searchTerm)
+    item.category.toLowerCase().includes(searchTerm) ||
+    findSimilarWords(item.product.toLowerCase(), searchTerm) ||
+    findSimilarWords(item.category.toLowerCase(), searchTerm)
   );
 
   if (results.length > 0) {
@@ -196,7 +391,9 @@ function searchInventory() {
       resultItem.className = 'search-result-item';
       resultItem.innerHTML = `
         <strong>${highlightText(item.product, searchTerm)}</strong><br>
-        Cantidad: ${item.quantity}, Marca: ${highlightText(item.brand, searchTerm)}
+        Categoría: ${highlightText(item.category, searchTerm)}<br>
+        Cantidad: ${item.quantity}, Marca: ${highlightText(item.brand, searchTerm)}<br>
+        Ubicación: ${item.location}
       `;
       resultItem.addEventListener('click', () => {
         document.getElementById('search-input').value = item.product;
@@ -252,6 +449,55 @@ function levenshteinDistance(a, b) {
   return matrix[b.length][a.length];
 }
 
+function changeFontSize(delta) {
+  currentFontSize += delta;
+  document.querySelector('table').style.fontSize = `${currentFontSize}px`;
+}
+
+function updateReportButtonVisibility() {
+  const reportButton = document.getElementById('generate-report');
+  const hasItemsDeBaja = inventoryData.some(item => item.status.toLowerCase() === 'de baja');
+  reportButton.style.display = hasItemsDeBaja ? 'block' : 'none';
+}
+
+function generateReport() {
+  const itemsDeBaja = inventoryData.filter(item => item.status.toLowerCase() === 'de baja');
+  const reportContent = document.getElementById('report-content');
+  reportContent.innerHTML = '';
+
+  if (itemsDeBaja.length > 0) {
+    const reportTable = document.createElement('table');
+    reportTable.innerHTML = `
+      <tr>
+        <th>Categoría</th>
+        <th>Producto</th>
+        <th>Cantidad</th>
+        <th>Marca</th>
+        <th>Ubicación</th>
+        <th>Fecha de Adquisición</th>
+      </tr>
+    `;
+
+    itemsDeBaja.forEach(item => {
+      const row = reportTable.insertRow();
+      row.innerHTML = `
+        <td>${item.category}</td>
+        <td>${item.product}</td>
+        <td>${item.quantity}</td>
+        <td>${item.brand}</td>
+        <td>${item.location}</td>
+        <td>${item.acquisitionDate}</td>
+      `;
+    });
+
+    reportContent.appendChild(reportTable);
+  } else {
+    reportContent.textContent = 'No hay herramientas de baja en este momento.';
+  }
+
+  document.getElementById('report-modal').style.display = 'block';
+}
+
 updateInventory();
 setInterval(updateInventory, 300000); // Actualiza cada 5 minutos
 
@@ -263,6 +509,40 @@ document.addEventListener('click', function(event) {
     searchResults.style.display = 'none';
   }
 });
+
+document.getElementById('increase-font').addEventListener('click', () => changeFontSize(1));
+document.getElementById('decrease-font').addEventListener('click', () => changeFontSize(-1));
+document.getElementById('generate-report').addEventListener('click', generateReport);
+
+// Cerrar el modal
+document.querySelectorAll('.modal .close').forEach(closeBtn => {
+  closeBtn.addEventListener('click', () => {
+    closeBtn.closest('.modal').style.display = 'none';
+  });
+});
+
+window.addEventListener('click', (event) => {
+  if (event.target.classList.contains('modal')) {
+    event.target.style.display = 'none';
+  }
+});
+
+// Ajustar tamaño de fuente inicial según el ancho de la pantalla
+function adjustInitialFontSize() {
+  const width = window.innerWidth;
+  if (width <= 480) {
+    currentFontSize = 10;
+  } else if (width <= 768) {
+    currentFontSize = 12;
+  } else {
+    currentFontSize = 14;
+  }
+  document.querySelector('table').style.fontSize = `${currentFontSize}px`;
+}
+
+// Llamar a la función al cargar la página y al cambiar el tamaño de la ventana
+window.addEventListener('load', adjustInitialFontSize);
+window.addEventListener('resize', adjustInitialFontSize);
 </script>
 
 </body></html>
